@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="{{ settings.language }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ t("ui.title") }}</title>
+    <style>
+      :root {
+        --paper: #f4f1e7;
+        --panel: #fbf8f0;
+        --panel-2: #f0eadc;
+        --ink: #191816;
+        --line: #2c2a26;
+        --sage: #6f8f72;
+        --sage-deep: #556e58;
+        --sage-pale: #d7e1d3;
+        --sand: #d8cfbb;
+        --danger: #cc8e7e;
+        --danger-pale: #f3ddd6;
+        --shadow: 10px 10px 0 rgba(25, 24, 22, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 22%),
+          linear-gradient(180deg, #6e8d73 0%, #7a9780 20%, #7f9b84 52%, #729076 100%);
+        color: var(--ink);
+        font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+
+      .shell {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+
+      .top-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .banner,
+      .panel,
+      .mini,
+      .feed,
+      .photo,
+      .result-box {
+        border: 3px solid var(--line);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .banner {
+        padding: 22px 24px 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .banner::after {
+        content: "";
+        position: absolute;
+        inset: auto -32px -28px auto;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 7px 12px;
+        background: var(--sage-pale);
+        border: 2px solid var(--line);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      h1 {
+        margin: 18px 0 8px;
+        font-size: clamp(36px, 4vw, 64px);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+
+      .hero-copy,
+      .panel p,
+      .feed p,
+      .photo p,
+      .mini p {
+        margin: 0;
+        line-height: 1.35;
+      }
+
+      .hero-copy {
+        max-width: 680px;
+        font-size: 18px;
+      }
+
+      .status-bar {
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 2px solid var(--line);
+        background: #fff;
+        font-size: 14px;
+      }
+
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--sage);
+        border: 2px solid var(--line);
+      }
+
+      .command {
+        display: flex;
+        flex-direction: column;
+        align-self: start;
+        gap: 14px;
+        padding: 22px;
+        border: 3px solid var(--line);
+        background:
+          linear-gradient(180deg, rgba(111, 143, 114, 0.28), rgba(111, 143, 114, 0.06)),
+          var(--panel-2);
+        box-shadow: var(--shadow);
+      }
+
+      .command h2,
+      .panel h2 {
+        margin: 0;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .primary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .command .primary:first-of-type { margin-bottom: 2px; }
+      .command .secondary-actions { margin-top: 2px; }
+      .action-help {
+        display: grid;
+        gap: 6px;
+        margin-top: 2px;
+        font-size: 14px;
+        line-height: 1.3;
+      }
+
+      .action-help strong {
+        display: inline-block;
+        min-width: 100px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 2px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .btn-primary { background: var(--sage); }
+      .btn-quiet { background: transparent; }
+      .btn-danger { background: var(--danger-pale); }
+
+      .stack {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: 24px;
+      }
+
+      .column { display: grid; gap: 24px; }
+
+      .panel { padding: 22px; }
+
+      .panel-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .panel-head h3 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+
+      .panel-head span {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      .subgrid { display: grid; gap: 16px; }
+      .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+      .field,
+      .mini,
+      .feed,
+      .photo,
+      .result-box {
+        background: #fffdf7;
+      }
+
+      .field {
+        border: 2px solid var(--line);
+        padding: 12px 14px;
+      }
+
+      .field label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        min-height: 44px;
+        padding: 0 14px;
+        border: 2px solid var(--line);
+        background: var(--paper);
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .checkbox-field {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+      }
+
+      .checkbox-field input { width: 18px; height: 18px; }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .mini {
+        padding: 16px;
+        border: 2px solid var(--line);
+      }
+
+      .mini h4 { margin: 0 0 10px; font-size: 18px; }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        background: var(--sage-pale);
+        border: 2px solid var(--line);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .feed-stack,
+      .photo-stack { display: grid; gap: 14px; }
+
+      .feed {
+        padding: 16px;
+        border: 2px solid var(--line);
+      }
+
+      .feed-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .feed-head strong { font-size: 20px; }
+
+      .feed-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) 150px 110px;
+        gap: 12px;
+        align-items: end;
+      }
+
+      .feed-grid .field { margin: 0; }
+
+      .feed-status {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border: 2px solid var(--line);
+        background: var(--sage-pale);
+      }
+
+      .help-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .hint-card {
+        padding: 14px;
+        border: 2px solid var(--line);
+        background: var(--paper);
+      }
+
+      .hint-card h4 { margin: 0 0 8px; font-size: 18px; }
+
+      .hint-link {
+        display: inline-flex;
+        margin-top: 10px;
+        font-weight: 800;
+        color: var(--sage-deep);
+        text-decoration: none;
+      }
+
+      .photo-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .upload-status {
+        margin-top: -6px;
+        margin-bottom: 14px;
+        font-size: 14px;
+      }
+
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 14px;
+      }
+
+      .photo {
+        overflow: hidden;
+        border: 2px solid var(--line);
+      }
+
+      .photo img {
+        display: block;
+        width: 100%;
+        height: 168px;
+        object-fit: cover;
+        border-bottom: 2px solid var(--line);
+        background: var(--panel-2);
+      }
+
+      .photo-meta { padding: 12px; }
+      .photo-meta strong { display: block; margin-bottom: 10px; }
+
+      .result-box {
+        padding: 16px;
+        border: 2px solid var(--line);
+        background: var(--sage-pale);
+      }
+
+      .message-strip,
+      .error-strip {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 2px solid var(--line);
+        box-shadow: var(--shadow);
+      }
+
+      .message-strip { background: var(--sage-pale); }
+      .error-strip { background: var(--danger-pale); }
+
+      details {
+        margin-top: 14px;
+        border: 2px solid var(--line);
+        background: #fffdf7;
+        padding: 14px;
+      }
+
+      summary { cursor: pointer; font-weight: 800; }
+
+      .footer-note {
+        margin-top: 28px;
+        padding: 14px 18px;
+        border-left: 6px solid var(--sage);
+        background: rgba(127, 159, 130, 0.12);
+        font-size: 15px;
+      }
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .location-card {
+        border: 2px solid var(--line);
+        background: #fffdf7;
+        padding: 14px;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      @media (max-width: 1100px) {
+        .top-grid,
+        .stack,
+        .feed-grid,
+        .help-grid,
+        .mini-grid,
+        .row-2,
+        .row-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .panel-head {
+          align-items: start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <form id="settings-form" method="post" action="/settings">
+        <section class="top-grid">
+          <div class="banner">
+            <span class="eyebrow">{{ t("ui.eyebrow") }}</span>
+            <h1>{{ t("ui.settings") }}</h1>
+            <p class="hero-copy">
+              {{ t("ui.hero") }}
+            </p>
+            <div class="status-bar">
+              <div class="chip"><span class="dot"></span>{{ t("ui.device") }}: <strong>{{ hostname }}</strong></div>
+              <div class="chip">{{ t("ui.open_locally") }} <strong>{{ access_url }}</strong></div>
+            </div>
+
+            {% if message %}
+              <div class="message-strip">{{ message }}</div>
+            {% endif %}
+            {% if error %}
+              <div class="error-strip">{{ error }}</div>
+            {% endif %}
+            {% for category, text in flashes %}
+              <div class="{{ 'error-strip' if category == 'error' else 'message-strip' }}">{{ text }}</div>
+            {% endfor %}
+          </div>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <span>{{ t("ui.planner_basics") }}</span>
+                <h3>{{ t("ui.general") }}</h3>
+              </div>
+            </div>
+            <div class="subgrid">
+              <div class="row-2">
+                <div class="field">
+                  <label for="dashboard_title">{{ t("ui.dashboard_title") }}</label>
+                  <input id="dashboard_title" name="dashboard_title" type="text" value="{{ settings.dashboard_title }}">
+                </div>
+                <div class="field">
+                  <label for="language">{{ t("ui.language") }}</label>
+                  <select id="language" name="language">
+                    <option value="en" {% if settings.language == "en" %}selected{% endif %}>{{ t("ui.lang.en") }}</option>
+                    <option value="de" {% if settings.language == "de" %}selected{% endif %}>{{ t("ui.lang.de") }}</option>
+                    <option value="fr" {% if settings.language == "fr" %}selected{% endif %}>{{ t("ui.lang.fr") }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="stack">
+          <div class="column">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <span>{{ t("ui.weather") }}</span>
+                  <h3>{{ t("ui.location") }}</h3>
+                </div>
+              </div>
+              <div class="subgrid">
+                <div class="field">
+                  <label for="weather_location_query">{{ t("ui.city_state_country") }}</label>
+                  <input id="weather_location_query" name="weather_location_query" type="text" value="{{ settings.weather.location_query or '' }}" placeholder="{{ t('ui.city_state_country') }}">
+                </div>
+                <div class="row-2">
+                  <div class="field">
+                    <label for="weather_country_code">{{ t("ui.country_code") }}</label>
+                    <input id="weather_country_code" name="weather_country_code" type="text" value="{{ settings.weather.country_code or '' }}" placeholder="US">
+                  </div>
+                  <div class="field">
+                    <label for="weather_temperature_unit">{{ t("ui.temp_unit") }}</label>
+                    <select id="weather_temperature_unit" name="weather_temperature_unit">
+                      <option value="fahrenheit" {% if settings.weather.temperature_unit == "fahrenheit" %}selected{% endif %}>{{ t("ui.unit.fahrenheit") }}</option>
+                      <option value="celsius" {% if settings.weather.temperature_unit == "celsius" %}selected{% endif %}>{{ t("ui.unit.celsius") }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="primary">
+                  <button id="find-location-button" class="btn btn-primary" type="submit" formaction="/actions/geocode">{{ t("ui.find_location_matches") }}</button>
+                </div>
+                <div class="mini-grid">
+                  <div class="mini">
+                    <h4>{{ t("ui.resolved_coordinates") }}</h4>
+                    <p>{{ settings.weather.latitude }}, {{ settings.weather.longitude }}</p>
+                  </div>
+                  <div class="mini">
+                    <h4>{{ t("ui.timezone") }}</h4>
+                    <p>{{ settings.weather.timezone }}</p>
+                  </div>
+                </div>
+                <details>
+                  <summary>{{ t("ui.advanced_weather") }}</summary>
+                  <div class="subgrid" style="margin-top: 14px;">
+                    <div class="row-2">
+                      <div class="field">
+                        <label for="weather_thundersnow_f">{{ t("ui.thundersnow_f") }}</label>
+                        <input id="weather_thundersnow_f" name="weather_thundersnow_f" type="number" step="any" value="{{ settings.weather.thundersnow_f }}">
+                      </div>
+                      <div class="field">
+                        <label for="weather_thundersnow_c">{{ t("ui.thundersnow_c") }}</label>
+                        <input id="weather_thundersnow_c" name="weather_thundersnow_c" type="number" step="any" value="{{ settings.weather.thundersnow_c }}">
+                      </div>
+                    </div>
+                    <div class="row-2">
+                      <div class="field">
+                        <label for="weather_snow_temp_f">{{ t("ui.snow_temp_f") }}</label>
+                        <input id="weather_snow_temp_f" name="weather_snow_temp_f" type="number" step="any" value="{{ settings.weather.snow_temp_f }}">
+                      </div>
+                      <div class="field">
+                        <label for="weather_snow_temp_c">{{ t("ui.snow_temp_c") }}</label>
+                        <input id="weather_snow_temp_c" name="weather_snow_temp_c" type="number" step="any" value="{{ settings.weather.snow_temp_c }}">
+                      </div>
+                    </div>
+                    <div class="row-3">
+                      <div class="field">
+                        <label for="weather_recent_snow_hours">{{ t("ui.recent_snow_hours") }}</label>
+                        <input id="weather_recent_snow_hours" name="weather_recent_snow_hours" type="number" value="{{ settings.weather.recent_snow_hours }}">
+                      </div>
+                      <div class="field">
+                        <label for="weather_recent_snow_mm">{{ t("ui.recent_snow_mm") }}</label>
+                        <input id="weather_recent_snow_mm" name="weather_recent_snow_mm" type="number" step="any" value="{{ settings.weather.recent_snow_mm }}">
+                      </div>
+                      <div class="field">
+                        <label for="weather_recent_snow_mm_15">{{ t("ui.recent_snow_mm_15") }}</label>
+                        <input id="weather_recent_snow_mm_15" name="weather_recent_snow_mm_15" type="number" step="any" value="{{ settings.weather.recent_snow_mm_15 }}">
+                      </div>
+                    </div>
+                    <div class="row-2">
+                      <div class="field">
+                        <label for="weather_recent_precip_minutes">{{ t("ui.recent_precip_minutes") }}</label>
+                        <input id="weather_recent_precip_minutes" name="weather_recent_precip_minutes" type="number" value="{{ settings.weather.recent_precip_minutes }}">
+                      </div>
+                      <div class="field">
+                        <label for="weather_recent_precip_mm">{{ t("ui.recent_precip_mm") }}</label>
+                        <input id="weather_recent_precip_mm" name="weather_recent_precip_mm" type="number" step="any" value="{{ settings.weather.recent_precip_mm }}">
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <span>{{ t("ui.calendar_setup") }}</span>
+                  <h3>{{ t("ui.feeds") }}</h3>
+                </div>
+              </div>
+
+              <div class="feed-stack" id="calendar-sources">
+                {% for source in settings.calendar_sources %}
+                  <div class="feed">
+                    <div class="feed-head">
+                      <strong>{{ source.label }}</strong>
+                      <span class="pill">{{ t('ui.enabled') if source.enabled else t('ui.draft') }}</span>
+                    </div>
+                    <input type="hidden" name="calendar_source_id" value="{{ source.id }}">
+                    <div class="feed-grid">
+                      <div class="field">
+                        <label>{{ t("ui.feed_url") }}</label>
+                        <input name="calendar_source_url" type="text" value="{{ source.url }}" placeholder="{{ t('ui.feed_url_placeholder') }}">
+                      </div>
+                      <div class="field">
+                        <label>{{ t("ui.provider") }}</label>
+                        <select name="calendar_source_type">
+                          <option value="ics" {% if source.type == "ics" %}selected{% endif %}>{{ t("ui.ics_feed") }}</option>
+                          <option value="google" {% if source.type == "google" %}selected{% endif %}>Google</option>
+                          <option value="outlook" {% if source.type == "outlook" %}selected{% endif %}>Outlook</option>
+                          <option value="apple" {% if source.type == "apple" %}selected{% endif %}>Apple</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label>{{ t("ui.enabled") }}</label>
+                        <div class="checkbox-field">
+                          <input type="checkbox" name="calendar_source_enabled" value="{{ source.id }}" {% if source.enabled %}checked{% endif %}>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="subgrid" style="margin-top: 12px;">
+                      <div class="field">
+                        <label>{{ t("ui.label") }}</label>
+                        <input name="calendar_source_label" type="text" value="{{ source.label }}" placeholder="{{ t('ui.calendar_label') }}">
+                      </div>
+                      <div class="primary">
+                        <button class="btn btn-quiet" type="submit" formaction="/actions/test-calendar-feed" name="test_source_id" value="{{ source.id }}">{{ t("ui.test_this_feed") }}</button>
+                      </div>
+                      {% set status = calendar_test_status_by_id.get(source.id) %}
+                      {% if status %}
+                        <div class="feed-status">
+                          <strong>{{ t('ui.connected') if status.success else t('ui.problem') }}</strong>
+                          {% if status.success %}
+                            : {{ t("ui.loaded_events", count=status.event_count) }}
+                            {% if status.preview_lines %}
+                              <ul>
+                                {% for line in status.preview_lines %}
+                                  <li>{{ line }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          {% else %}
+                            : {{ status.error }}
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+
+                <div class="feed calendar-source-template">
+                  <div class="feed-head">
+                    <strong>{{ t("ui.new_calendar_feed") }}</strong>
+                    <span class="pill" style="background: var(--sand);">{{ t("ui.draft") }}</span>
+                  </div>
+                  <input type="hidden" name="calendar_source_id" value="">
+                  <div class="feed-grid">
+                    <div class="field">
+                      <label>{{ t("ui.feed_url") }}</label>
+                      <input name="calendar_source_url" type="text" value="" placeholder="{{ t('ui.feed_url_placeholder') }}">
+                    </div>
+                    <div class="field">
+                      <label>{{ t("ui.provider") }}</label>
+                      <select name="calendar_source_type">
+                        <option value="ics">{{ t("ui.ics_feed") }}</option>
+                        <option value="google">Google</option>
+                        <option value="outlook">Outlook</option>
+                        <option value="apple">Apple</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>{{ t("ui.enabled") }}</label>
+                      <div class="checkbox-field">
+                        <input type="checkbox" name="calendar_source_enabled" value="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="subgrid" style="margin-top: 12px;">
+                    <div class="field">
+                      <label>{{ t("ui.label") }}</label>
+                      <input name="calendar_source_label" type="text" value="" placeholder="{{ t('ui.new_label') }}">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="primary" style="margin-top: 16px;">
+                <button class="btn btn-primary" type="button" id="add-calendar-source">{{ t("ui.add_another_feed") }}</button>
+              </div>
+
+              <div class="help-grid">
+                <div class="hint-card">
+                  <h4>Google</h4>
+                  <p>{{ t("ui.google_help_copy") }}</p>
+                  <a class="hint-link" href="https://support.google.com/calendar/answer/37648" target="_blank" rel="noopener noreferrer">{{ t("ui.google_help") }}</a>
+                </div>
+                <div class="hint-card">
+                  <h4>Apple</h4>
+                  <p>{{ t("ui.apple_help_copy") }}</p>
+                  <a class="hint-link" href="https://support.apple.com/guide/calendar/share-calendars-icl1023/mac" target="_blank" rel="noopener noreferrer">{{ t("ui.apple_help") }}</a>
+                </div>
+                <div class="hint-card">
+                  <h4>Outlook</h4>
+                  <p>{{ t("ui.outlook_help_copy") }}</p>
+                  <a class="hint-link" href="https://support.microsoft.com/office/introduce-someone-to-your-calendar-8e54d4b8-8f7b-41b1-a8f1-6c61b49927f5" target="_blank" rel="noopener noreferrer">{{ t("ui.outlook_help") }}</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="column">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <span>{{ t("ui.privacy_mode") }}</span>
+                  <h3>{{ t("ui.photos") }}</h3>
+                </div>
+              </div>
+              <div class="photo-tools">
+                <label class="btn btn-primary" for="photo-upload-input">{{ t("ui.upload_photos") }}</label>
+                {% if photo_files %}
+                  <button class="btn btn-danger" type="submit" form="photo-delete-all-form">{{ t("ui.delete_all") }}</button>
+                {% endif %}
+              </div>
+              <div class="upload-status" id="photo-upload-status">{{ t("ui.photo_upload_help") }}</div>
+              <div class="mini-grid" style="margin-bottom: 16px;">
+                <div class="mini">
+                  <h4>{{ t("ui.current_photos") }}</h4>
+                  <p>{{ t("ui.uploaded_count", count=photo_files|length) }}</p>
+                </div>
+                <div class="mini">
+                  <h4>{{ t("ui.slideshow") }}</h4>
+                  <p>{{ t("ui.every_seconds", seconds=settings.photo_interval_seconds or 180) }}{% if settings.photo_shuffle_enabled %}{{ t("ui.shuffled_suffix") }}{% endif %}</p>
+                </div>
+              </div>
+              <div class="subgrid" style="margin-bottom: 16px;">
+                <div class="field">
+                  <label for="photo_folder">{{ t("ui.photo_folder") }}</label>
+                  <input id="photo_folder" name="photo_folder" type="text" value="{{ settings.photo_folder }}">
+                </div>
+                <div class="row-2">
+                  <div class="field">
+                    <label for="photo_interval_seconds">{{ t("ui.slide_interval_seconds") }}</label>
+                    <input id="photo_interval_seconds" name="photo_interval_seconds" type="number" value="{{ settings.photo_interval_seconds or 180 }}">
+                  </div>
+                  <div class="field">
+                    <label>{{ t("ui.shuffle_slideshow") }}</label>
+                    <div class="checkbox-field">
+                      <input id="photo_shuffle_enabled" name="photo_shuffle_enabled" type="checkbox" {% if settings.photo_shuffle_enabled %}checked{% endif %}>
+                      <span>{{ t("ui.shuffle_order") }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="photo-stack">
+                {% if photo_files_preview %}
+                  <input type="hidden" name="photo_page" value="{{ photo_page }}">
+                  <div class="photo-grid">
+                    {% for photo in photo_files_preview %}
+                      <article class="photo">
+                        <img src="/photos/file/{{ photo.name }}" alt="{{ photo.name }}">
+                        <div class="photo-meta">
+                          <strong>{{ photo.name }}</strong>
+                          <button class="btn btn-quiet" type="submit" formaction="/photos/delete" name="filename" value="{{ photo.name }}">{{ t("ui.delete") }}</button>
+                        </div>
+                      </article>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="mini">
+                    <h4>{{ t("ui.no_uploaded_photos") }}</h4>
+                    <p>{{ t("ui.photo_empty_help") }}</p>
+                  </div>
+                {% endif %}
+
+                {% if total_photo_pages > 1 %}
+                  <div class="pagination">
+                    {% if photo_page > 1 %}
+                      <button class="btn btn-quiet" type="submit" formaction="/photos/page" name="photo_page" value="{{ photo_page - 1 }}">{{ t("ui.previous") }}</button>
+                    {% endif %}
+                    <span class="pill">{{ t("ui.page_of", page=photo_page, total=total_photo_pages) }}</span>
+                    {% if photo_page < total_photo_pages %}
+                      <button class="btn btn-quiet" type="submit" formaction="/photos/page" name="photo_page" value="{{ photo_page + 1 }}">{{ t("ui.next") }}</button>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+            </article>
+
+            {% if geocode_results %}
+              <article class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span>{{ t("ui.weather") }}</span>
+                    <h3>{{ t("ui.location_matches") }}</h3>
+                  </div>
+                  <span>{{ t("ui.pick_correct_place") }}</span>
+                </div>
+                <div class="subgrid">
+                  {% for result in geocode_results %}
+                    <div class="location-card">
+                      <input type="hidden" name="pending_settings_json" value='{{ pending_settings_json }}'>
+                      <strong>{{ result.display_name }}</strong>
+                      <p style="margin-top: 8px;">{{ result.latitude }}, {{ result.longitude }}</p>
+                      {% if result.timezone %}
+                        <p>{{ result.timezone }}</p>
+                      {% endif %}
+                      <button
+                        class="btn btn-primary"
+                        type="submit"
+                        formaction="/actions/apply-geocode"
+                        name="geocode_result_json"
+                        value='{{ {
+                          "name": result.name,
+                          "latitude": result.latitude,
+                          "longitude": result.longitude,
+                          "timezone": result.timezone or "",
+                          "country": result.country or "",
+                          "admin1": result.admin1 or "",
+                          "country_code": result.country_code or ""
+                        }|tojson }}'
+                      >{{ t("ui.use_this_location") }}</button>
+                    </div>
+                  {% endfor %}
+                </div>
+              </article>
+            {% endif %}
+
+            {% if calendar_test_results %}
+              <article class="panel">
+                <div class="panel-head">
+                  <div>
+                    <span>{{ t("ui.feedback") }}</span>
+                    <h3>{{ t("ui.results") }}</h3>
+                  </div>
+                </div>
+                <p style="margin-bottom: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;">{{ t("ui.calendar_test_results") }}</p>
+                <div class="subgrid">
+                  {% for result in calendar_test_results %}
+                    <div class="result-box">
+                      <strong>{{ result.label }}</strong> ({{ result.source_type }})<br>
+                      <code>{{ result.source_url }}</code><br><br>
+                      {% if result.success %}
+                        {{ t("ui.loaded_events", count=result.event_count) }}
+                        {% if result.preview_lines %}
+                          <ul>
+                            {% for line in result.preview_lines %}
+                              <li>{{ line }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                      {% else %}
+                        {{ result.error }}
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </article>
+            {% endif %}
+
+            <aside class="command">
+              <h2>{{ t("ui.action_bar") }}</h2>
+              <div class="primary">
+                <button class="btn btn-primary" type="submit">{{ t("ui.save_changes") }}</button>
+                <button class="btn" type="submit" formaction="/actions/refresh">{{ t("ui.refresh_now") }}</button>
+              </div>
+              <div class="primary secondary-actions">
+                <button class="btn btn-quiet" type="submit" formaction="/actions/test-calendar">{{ t("ui.test_calendar") }}</button>
+                <button class="btn btn-quiet" type="submit" formaction="/actions/test-weather">{{ t("ui.test_weather") }}</button>
+              </div>
+              <div class="primary secondary-actions">
+                <a class="btn btn-quiet" href="/config/export">{{ t("ui.export_settings") }}</a>
+                <button class="btn btn-quiet" type="button" id="import-settings-trigger">{{ t("ui.import_settings") }}</button>
+              </div>
+              <div class="action-help">
+                <div><strong>{{ t("ui.save_changes") }}</strong> {{ t("ui.help.save_changes") }}</div>
+                <div><strong>{{ t("ui.refresh_now") }}</strong> {{ t("ui.help.refresh_now") }}</div>
+                <div><strong>{{ t("ui.test_calendar") }}</strong> {{ t("ui.help.test_calendar") }}</div>
+                <div><strong>{{ t("ui.test_weather") }}</strong> {{ t("ui.help.test_weather") }}</div>
+                <div><strong>{{ t("ui.import_settings") }} / {{ t("ui.export_settings") }}</strong> {{ t("ui.help.import_export") }}</div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </form>
+
+      <form id="photo-upload-form" method="post" action="/photos/upload" enctype="multipart/form-data" style="display:none;">
+        <input id="photo-upload-input" type="file" name="photos" multiple accept=".jpg,.jpeg,.png,.webp,.bmp">
+      </form>
+
+      <form id="photo-delete-all-form" method="post" action="/photos/delete-all" style="display:none;"></form>
+
+      <form id="settings-import-form" method="post" action="/config/import" enctype="multipart/form-data" style="display:none;">
+        <input id="settings-import-input" type="file" name="settings_file" accept=".json,application/json">
+      </form>
+
+    </div>
+
+    <script>
+      function wireCalendarTypeChange(select) {
+        select.addEventListener('change', function() {
+          var row = select.closest('.feed');
+          if (!row) return;
+          var urlInput = row.querySelector('input[name="calendar_source_url"]');
+          if (!urlInput) return;
+          if (select.value !== 'ics' && urlInput.value.indexOf('sample_family_calendar.ics') !== -1) {
+            urlInput.value = '';
+          }
+        });
+      }
+
+      document.querySelectorAll('select[name="calendar_source_type"]').forEach(wireCalendarTypeChange);
+
+      function bindLocationEnter(input) {
+        if (!input) return;
+        input.addEventListener('keydown', function(event) {
+          if (event.key !== 'Enter') return;
+          event.preventDefault();
+          var button = document.getElementById('find-location-button');
+          if (button) {
+            button.click();
+          }
+        });
+      }
+
+      bindLocationEnter(document.getElementById('weather_location_query'));
+      bindLocationEnter(document.getElementById('weather_country_code'));
+
+      var languageSelect = document.getElementById('language');
+      var settingsForm = document.getElementById('settings-form');
+      if (languageSelect && settingsForm) {
+        languageSelect.addEventListener('change', function() {
+          settingsForm.action = '/actions/preview-language';
+          settingsForm.submit();
+        });
+      }
+
+      var addCalendarButton = document.getElementById('add-calendar-source');
+      var calendarSources = document.getElementById('calendar-sources');
+      if (addCalendarButton && calendarSources) {
+        addCalendarButton.addEventListener('click', function() {
+          var template = calendarSources.querySelector('.calendar-source-template');
+          if (!template) return;
+          var clone = template.cloneNode(true);
+          clone.querySelectorAll('input').forEach(function(input) {
+            if (input.type === 'checkbox') {
+              input.checked = false;
+            } else {
+              input.value = '';
+            }
+          });
+          clone.querySelectorAll('select').forEach(function(select) {
+            select.value = 'ics';
+            wireCalendarTypeChange(select);
+          });
+          calendarSources.appendChild(clone);
+        });
+      }
+
+      var uploadInput = document.getElementById('photo-upload-input');
+      var uploadStatus = document.getElementById('photo-upload-status');
+      if (uploadInput) {
+        uploadInput.addEventListener('change', function() {
+          if (uploadInput.files && uploadInput.files.length > 0) {
+            if (uploadStatus) {
+              var count = uploadInput.files.length;
+              uploadStatus.textContent = count === 1
+                ? '{{ t("ui.upload_photos") }}: 1'
+                : '{{ t("ui.upload_photos") }}: ' + count;
+            }
+            document.getElementById('photo-upload-form').submit();
+          }
+        });
+      }
+
+      var importSettingsTrigger = document.getElementById('import-settings-trigger');
+      var importSettingsInput = document.getElementById('settings-import-input');
+      var importSettingsForm = document.getElementById('settings-import-form');
+      if (importSettingsTrigger && importSettingsInput && importSettingsForm) {
+        importSettingsTrigger.addEventListener('click', function() {
+          importSettingsInput.click();
+        });
+        importSettingsInput.addEventListener('change', function() {
+          if (!importSettingsInput.files || importSettingsInput.files.length === 0) {
+            return;
+          }
+          importSettingsForm.submit();
+        });
+      }
+    </script>
+  </body>
+</html>

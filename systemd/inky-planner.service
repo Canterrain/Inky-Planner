@@ -1,0 +1,17 @@
+[Unit]
+Description=Inky Planner Dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__RUN_USER__
+Group=__RUN_GROUP__
+WorkingDirectory=__PROJECT_ROOT__
+ExecStart=/bin/bash __PROJECT_ROOT__/scripts/run_app.sh
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

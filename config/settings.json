@@ -1,0 +1,42 @@
+{
+  "dashboard_title": "Inky Planner",
+  "language": "en",
+  "ics_url": "assets/sample_family_calendar.ics",
+  "photo_folder": "assets/photos",
+  "weather": {
+    "location_query": "Pittsburgh, PA",
+    "country_code": "US",
+    "latitude": 40.4406,
+    "longitude": -79.9959,
+    "timezone": "America/New_York",
+    "temperature_unit": "fahrenheit",
+    "thundersnow_f": 34,
+    "thundersnow_c": 1,
+    "snow_temp_f": 34,
+    "snow_temp_c": 1,
+    "recent_snow_hours": 2,
+    "recent_snow_mm": 0,
+    "recent_precip_minutes": 60,
+    "recent_precip_mm": 0,
+    "recent_snow_mm_15": 0
+  },
+  "refresh_interval_minutes": 30,
+  "temporary_mode_timeout_minutes": 10,
+  "default_preview_mode": "dashboard",
+  "mode_state_file": "state/mode_state.json",
+  "preview_output_enabled": true,
+  "hardware_display_enabled": false,
+  "spectra_mode": "off",
+  "palette_debug_enabled": true,
+  "photo_interval_seconds": 180,
+  "photo_shuffle_enabled": false,
+  "calendar_sources": [
+    {
+      "id": "legacy-ics",
+      "type": "ics",
+      "label": "Primary Calendar Feed",
+      "url": "assets/sample_family_calendar.ics",
+      "enabled": true
+    }
+  ]
+}
