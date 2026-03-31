@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime
 from pathlib import Path
+from time import monotonic
 from zoneinfo import ZoneInfo
 
 from config.settings import load_settings
@@ -12,7 +13,7 @@ from services.mode_state import build_mode_state
 from services.mode_state_store import load_persisted_mode_state, save_mode_state
 from services.photo_slideshow import advance_photo_if_due, reset_slideshow_timer
 from services.refresh_requests import consume_refresh_request
-from services.runtime import refresh_app
+from services.runtime import refresh_app, should_refresh_dashboard_on_idle
 
 
 def main() -> None:
@@ -56,14 +57,18 @@ def main() -> None:
             render_mode(mode, data, settings, output_dir / f"preview_{mode.value}_debug.png", debug=True)
 
     if should_run_button_listener:
+        last_refresh_at_monotonic = 0.0
+
         def safe_refresh(*, preview_only: bool, force_hardware: bool) -> bool:
+            nonlocal last_refresh_at_monotonic
             try:
-                refresh_app(
+                result = refresh_app(
                     settings_path,
                     preview_only=preview_only,
                     force_hardware=force_hardware,
                     output_dir=output_dir,
                 )
+                last_refresh_at_monotonic = monotonic()
                 return True
             except Exception as exc:
                 print(f"[app] refresh failed: {exc}")
@@ -99,8 +104,28 @@ def main() -> None:
 
             now = datetime.now(ZoneInfo(current_settings.weather.timezone))
             mode_state = load_persisted_mode_state(current_settings, now)
-            if mode_state.resolve_active_mode(now) == AppMode.PHOTO and advance_photo_if_due(current_settings):
+            active_mode = mode_state.resolve_active_mode(now)
+
+            if active_mode != mode_state.current_mode:
+                print(f"[mode] auto-return -> {active_mode.value}")
+                safe_refresh(preview_only=False, force_hardware=True)
+                return
+
+            if active_mode == AppMode.PHOTO and advance_photo_if_due(current_settings):
                 print("[photo] advance=next")
+                safe_refresh(preview_only=False, force_hardware=True)
+                return
+
+            if should_refresh_dashboard_on_idle(
+                current_settings,
+                active_mode,
+                last_refresh_monotonic=last_refresh_at_monotonic,
+                now_monotonic=monotonic(),
+            ):
+                print(
+                    "[refresh] scheduled dashboard refresh"
+                    f" interval_minutes={current_settings.refresh_interval_minutes}"
+                )
                 safe_refresh(preview_only=False, force_hardware=True)
 
         controller = ButtonController(on_mode_selected=handle_mode, on_idle=handle_idle)

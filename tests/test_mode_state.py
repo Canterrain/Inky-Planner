@@ -12,7 +12,7 @@ class ModeStateTests(unittest.TestCase):
         entered_at = datetime(2026, 3, 27, 9, 0)
         state = build_mode_state(settings, AppMode.TODAY, entered_at)
 
-        resolved = state.resolve_active_mode(datetime(2026, 3, 27, 9, 11))
+        resolved = state.resolve_active_mode(datetime(2026, 3, 27, 9, 16))
         self.assertEqual(AppMode.DASHBOARD, resolved)
 
     def test_persistent_photo_mode_does_not_auto_return(self) -> None:

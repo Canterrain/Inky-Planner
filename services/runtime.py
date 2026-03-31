@@ -23,6 +23,18 @@ class RefreshResult:
     display_result: DisplayUpdateResult | None
 
 
+def should_refresh_dashboard_on_idle(
+    settings: AppSettings,
+    active_mode: AppMode,
+    *,
+    last_refresh_monotonic: float,
+    now_monotonic: float,
+) -> bool:
+    if active_mode != AppMode.DASHBOARD:
+        return False
+    return now_monotonic - last_refresh_monotonic >= settings.refresh_interval_minutes * 60
+
+
 def refresh_app(
     settings_path: str | Path,
     *,
