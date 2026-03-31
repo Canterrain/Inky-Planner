@@ -21,13 +21,13 @@
     "recent_snow_mm_15": 0
   },
   "refresh_interval_minutes": 30,
-  "temporary_mode_timeout_minutes": 10,
+  "temporary_mode_timeout_minutes": 15,
   "default_preview_mode": "dashboard",
   "mode_state_file": "state/mode_state.json",
-  "preview_output_enabled": true,
+  "preview_output_enabled": false,
   "hardware_display_enabled": false,
-  "spectra_mode": "off",
-  "palette_debug_enabled": true,
+  "spectra_mode": "atkinson",
+  "palette_debug_enabled": false,
   "photo_interval_seconds": 180,
   "photo_shuffle_enabled": false,
   "calendar_sources": [
