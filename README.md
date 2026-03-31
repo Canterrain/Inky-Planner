@@ -1,78 +1,64 @@
 # Inky Planner
 
-Python project for rendering a static 800x480 planner dashboard for the Pimoroni Inky Impression 7.3. The app can show a 5-day calendar and forecast dashboard, detail views, and a photo-mode slideshow on the device.
+A clean, glanceable daily planner for e-paper displays.
 
-## Current State
+Designed to show exactly what matters today: your schedule, your next event, and just enough context to keep you on track without turning into a cluttered dashboard.
 
-The project now includes:
+Built for Raspberry Pi and Pimoroni Inky displays.
 
-- Raspberry Pi setup via `setup.sh`
-- a systemd-managed planner service
-- a local Flask config UI at `http://<hostname>.local:8080/settings`
-- guided ICS calendar feed setup for Google, Apple, Outlook, and similar providers
-- weather setup with Open-Meteo geocoding
-- photo uploads and slideshow mode
-- settings export/import with automatic pre-import backups
+## What This Is
 
-If live calendar or weather fetches fail, the app falls back to local sample data so preview and development workflows still keep working.
+Most digital planners try to do too much.
 
-## Project Structure
+This one does not.
 
-- `app.py`: entry point for render flow, hardware refreshes, and button mode changes
-- `config/layout.py`: layout and color constants
-- `config/settings.py`: settings loader and validation
-- `config/settings.json`: example local configuration
-- `hardware/`: Inky display, button, palette, and conversion helpers
-- `models/`: typed data models
-- `renderer/`: dashboard, detail, and photo rendering
-- `scripts/run_app.sh`: stable app launcher
-- `scripts/run_web.sh`: stable web UI launcher
-- `services/calendar_service.py`: ICS loading, recurrence expansion, and calendar feed testing
-- `services/dashboard_data.py`: combines settings, live services, and fallback behavior
-- `services/geocoding_service.py`: Open-Meteo location search and matching
-- `services/mock_data.py`: fallback sample data
-- `services/mode_state.py`: persisted current-mode helpers
-- `services/photo_service.py`: uploaded photo storage and management
-- `services/photo_slideshow.py`: slideshow order and timing state
-- `services/refresh_requests.py`: bridge between the web UI and running planner service
-- `services/runtime.py`: render and hardware refresh orchestration
-- `services/weather_service.py`: Open-Meteo forecast fetching
-- `services/weather_icons.py`: icon naming aligned to local assets
-- `systemd/inky-planner.service`: planner service template
-- `systemd/inky-planner-web.service`: web UI service template
-- `web/`: local Flask config UI
-- `assets/icons/weather/`: weather icon assets
-- `assets/photos/`: photo-mode image folder
-- `assets/sample_family_calendar.ics`: sample calendar feed for local preview
-- `tests/`: unit tests
+Inky Planner is built around a simple idea:
 
-## Key Settings
+You should be able to walk by your display and immediately understand your day.
 
-`config/settings.json` includes:
+No scrolling. No interaction. No noise.
 
-- `dashboard_title`
-- `language`
-- `calendar_sources`
-- `weather`
-- `photo_folder`
-- `photo_interval_seconds`
-- `photo_shuffle_enabled`
-- `refresh_interval_minutes`
-- `default_preview_mode`
-- `spectra_mode`
+Just:
 
-Notes:
+- today's date
+- your events
+- what's next
+- and whether you actually have free time
 
-- `calendar_sources` supports multiple ICS / iCalendar feed URLs.
-- `ics_url` still exists for backward compatibility and mirrors the first enabled calendar feed.
-- `spectra_mode` defaults to `atkinson` for planner screens.
-- photo mode uses its own photo-specific hardware path.
-- weather setup can be driven from the web UI using city/state/country lookup.
-- preview/debug output generation is off by default for normal Pi use.
+## How It Thinks
 
-## Raspberry Pi Install
+Instead of dumping a calendar on screen, Inky Planner prioritizes information:
 
-On a Raspberry Pi with the Inky Impression attached:
+- Next Event stays front and center
+- free time is surfaced when it matters
+- weather appears when it adds value
+- busy and light days are reflected without over-explaining
+
+The goal is clarity, not completeness.
+
+## Hardware
+
+Designed for:
+
+- Raspberry Pi, tested on Pi 4 and Pi Zero 2 W
+- Pimoroni Inky displays in the Impression and Spectra family
+
+Other displays may work, but this project is tuned specifically for Inky hardware.
+
+## Features
+
+- clean, high-contrast layouts optimized for e-paper
+- dashboard, today, and tomorrow planner views
+- photo slideshow mode
+- local Flask config UI
+- guided ICS and iCalendar calendar setup
+- weather via Open-Meteo
+- English, German, and French support
+- automatic startup with systemd
+
+## Installation
+
+Recommended on Raspberry Pi:
 
 ```bash
 cd ~
@@ -80,19 +66,7 @@ wget https://raw.githubusercontent.com/Canterrain/Inky-Planner/main/setup.sh -O 
 bash inky-planner-setup.sh
 ```
 
-What `setup.sh` does:
-
-- downloads or updates the project in `~/inky-planner`
-- installs required system packages
-- creates or updates `.venv`
-- installs Python dependencies plus `inky` and `gpiod`
-- enables SPI and I2C when needed
-- installs and enables `avahi-daemon`
-- adds `dtoverlay=spi0-0cs` to `/boot/firmware/config.txt` when needed
-- installs and enables the planner and web UI services
-- prompts for reboot if hardware changes require it
-
-If you prefer a manual repo checkout for development:
+If you prefer a full local checkout:
 
 ```bash
 git clone https://github.com/Canterrain/Inky-Planner.git
@@ -100,140 +74,52 @@ cd Inky-Planner
 bash setup.sh
 ```
 
-After reboot, the config UI should be reachable at:
+The setup script will:
+
+- download or update the project in `~/inky-planner` when run standalone
+- install dependencies
+- configure Raspberry Pi display support
+- enable SPI and I2C if needed
+- install the planner and web services
+- prepare the system for auto-start
+
+## Running
+
+After setup, the planner runs automatically on boot.
+
+The local settings UI is available at:
 
 ```text
-http://<current-hostname>.local:8080/settings
+http://<hostname>.local:8080/settings
 ```
 
-For example:
-
-```text
-http://inkycal.local:8080/settings
-```
-
-Check status:
+If needed, you can manually check or restart it with:
 
 ```bash
 sudo systemctl status inky-planner.service
 sudo systemctl status inky-planner-web.service
-journalctl -u inky-planner.service -n 100 --no-pager
-journalctl -u inky-planner-web.service -n 100 --no-pager
-```
-
-Restart manually:
-
-```bash
 sudo systemctl restart inky-planner.service
 sudo systemctl restart inky-planner-web.service
 ```
 
-## Local Preview Setup
+## Philosophy
 
-1. Create and activate the virtual environment if needed:
+This project is intentionally opinionated.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+It is not trying to be:
 
-2. Install dependencies:
+- a full calendar replacement
+- a configurable dashboard builder
+- a widget playground
 
-```bash
-pip install -r requirements.txt
-```
+It is a daily companion display.
 
-3. Update `config/settings.json` or use the local web UI to configure:
+Something you glance at while making coffee and immediately know:
 
-- calendar feeds
-- weather location
-- photo folder/slideshow settings
-- optional settings export/import backups
+"What's happening today, and what do I need to care about?"
 
-4. Generate previews:
+## Related Projects
 
-```bash
-python app.py
-```
+If you like this, you might also like:
 
-Useful commands:
-
-```bash
-python app.py --mode today
-python app.py --mode tomorrow
-python app.py --mode photo
-python app.py --preview-only
-python app.py --render-all
-python -m web.app
-```
-
-Generated outputs can include:
-
-- `output/preview.png`
-- `output/preview_debug.png`
-- `output/preview_dashboard.png`
-- `output/preview_today.png`
-- `output/preview_tomorrow.png`
-- `output/preview_photo.png`
-- `output/layout_render.png`
-- `output/quantized_render.png`
-- `output/dithered_render.png`
-- `output/hardware_final.png`
-
-Preview/debug images are mainly for development. If you want them during local work, enable:
-
-- `preview_output_enabled`
-- `palette_debug_enabled`
-
-5. Run tests:
-
-```bash
-python -m unittest discover -s tests
-```
-
-## Calendar Setup
-
-The web UI uses ICS / iCalendar feed URLs.
-
-Typical sources:
-
-- Google Calendar: use the calendar's secret iCal address
-- Apple Calendar: use a published or shared iCalendar link
-- Outlook: publish the calendar and copy the ICS subscription link
-
-Each feed can be:
-
-- labeled
-- enabled or disabled
-- tested individually
-
-## Weather Setup
-
-The web UI supports:
-
-- city/state/country search
-- choosing from multiple geocoding matches
-- saving resolved latitude, longitude, and timezone
-- testing weather without leaving the settings page
-
-Weather data is fetched from Open-Meteo.
-
-## Photo Mode
-
-Photo mode supports:
-
-- browser uploads
-- multiple stored photos
-- slideshow interval control
-- optional shuffle
-
-When real uploaded photos exist, the sample photo is removed from the active photo folder.
-
-## Config Safety
-
-The web UI action area supports:
-
-- exporting the current settings as JSON
-- importing a saved settings JSON file
-
-When settings are imported, the previous config is backed up to `config/backups/` before the new file is applied.
+- [weather-display](https://github.com/Canterrain/weather-display), an under-cabinet clock and weather dashboard
