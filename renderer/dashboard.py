@@ -19,7 +19,10 @@ class DashboardRenderer:
     WEATHER_BAND_HEIGHT = 164
     CALENDAR_SIDE_MARGIN = 20
     DAY_BAR_HEIGHT = 22
-    EVENT_ROW_HEIGHT = 40
+    EVENT_ROW_HEIGHT = 46
+    EVENT_TEXT_TOP_PADDING = 5
+    EVENT_TEXT_LINE_GAP = 3
+    EVENT_TEXT_SECOND_LINE_OFFSET = 2
     WEATHER_ICON_SIZE = 92
     STATUS_BANNER_HEIGHT = 18
 
@@ -161,7 +164,7 @@ class DashboardRenderer:
     ) -> None:
         left, top, right, bottom = box
         if highlight:
-            draw.rectangle((left, top, right, bottom - 4), fill=YELLOW)
+            draw.rectangle((left, top, right, bottom - 1), fill=YELLOW)
 
         first_line, second_line = self._wrap_dashboard_event(
             draw,
@@ -170,9 +173,31 @@ class DashboardRenderer:
             right - left,
         )
 
-        self._draw_text(draw, left, top, first_line, BLACK, self.event_time_font)
+        first_line_y = top + self.EVENT_TEXT_TOP_PADDING
+        self._draw_text(
+            draw,
+            left,
+            first_line_y,
+            first_line,
+            BLACK,
+            self.event_time_font,
+        )
         if second_line:
-            self._draw_text(draw, left, top + 18, second_line, BLACK, self.event_title_font)
+            first_line_height = self._text_pixel_height(self.event_time_font, first_line)
+            second_line_y = (
+                first_line_y
+                + first_line_height
+                + self.EVENT_TEXT_LINE_GAP
+                + self.EVENT_TEXT_SECOND_LINE_OFFSET
+            )
+            self._draw_text(
+                draw,
+                left,
+                second_line_y,
+                second_line,
+                BLACK,
+                self.event_title_font,
+            )
 
     def _wrap_dashboard_event(
         self,
@@ -307,9 +332,16 @@ class DashboardRenderer:
 
     def _draw_text(self, draw: ImageDraw.ImageDraw, x: int, y: int, text: str, fill, font) -> None:
         bbox = font.getbbox(text)
-        width = max(1, bbox[2] - bbox[0])
-        height = max(1, bbox[3] - bbox[1])
+        pad = 2
+        width = max(1, (bbox[2] - bbox[0]) + (pad * 2))
+        height = max(1, (bbox[3] - bbox[1]) + (pad * 2))
         mask = Image.new("1", (width, height), 0)
         mask_draw = ImageDraw.Draw(mask)
-        mask_draw.text((-bbox[0], -bbox[1]), text, fill=1, font=font)
-        draw.bitmap((int(x), int(y)), mask, fill=fill)
+        mask_draw.text((pad - bbox[0], pad - bbox[1]), text, fill=1, font=font)
+        draw.bitmap((int(x) - pad, int(y) - pad), mask, fill=fill)
+
+    def _text_pixel_height(self, font, text: str) -> int:
+        bbox = font.getmask(text).getbbox()
+        if bbox is None:
+            return 0
+        return max(1, bbox[3] - bbox[1])

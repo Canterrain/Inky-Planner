@@ -75,7 +75,7 @@ CATALOG: dict[str, dict[str, str]] = {
         "ui.lang.fr": "French",
         "ui.weather": "Weather",
         "ui.location": "Location",
-        "ui.city_state_country": "City / State / Country",
+        "ui.city_state_country": "City / State / Province",
         "ui.country_code": "Country Code",
         "ui.temp_unit": "Temperature Unit",
         "ui.unit.fahrenheit": "Fahrenheit",
