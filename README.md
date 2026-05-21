@@ -1,5 +1,7 @@
 # Inky Planner
 
+![InkyPlanner](https://github.com/user-attachments/assets/abe12da5-01ac-4b53-a81c-c35f2223b5ae)
+
 A clean, glanceable daily planner for e-paper displays.
 
 Designed to show exactly what matters today: your schedule, your next event, and just enough context to keep you on track without turning into a cluttered dashboard.
