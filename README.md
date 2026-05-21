@@ -61,14 +61,6 @@ Other displays may work, but this project is tuned specifically for Inky hardwar
 Recommended on Raspberry Pi:
 
 ```bash
-cd ~
-wget https://raw.githubusercontent.com/Canterrain/Inky-Planner/main/setup.sh -O inky-planner-setup.sh
-bash inky-planner-setup.sh
-```
-
-If you prefer a full local checkout:
-
-```bash
 git clone https://github.com/Canterrain/Inky-Planner.git
 cd Inky-Planner
 bash setup.sh
