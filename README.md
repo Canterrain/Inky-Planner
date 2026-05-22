@@ -45,8 +45,10 @@ Designed for:
 - Raspberry Pi, tested on Pi 4 and Pi Zero 2 WH
 - Pimoroni Inky displays in the Impression and Spectra family
 Free STLs for the case:
-![Buttons on side (2025 version)](https://makerworld.com/en/models/2835228-pimoroni-inky-impression-7-3-v2025-case#profileId-3159881)
-![Buttons on back (2026 version)](https://makerworld.com/en/models/2835207-pimoroni-inky-impression-7-3-v2026-case#profileId-3159848)
+
+[Buttons on side (2025 version)](https://makerworld.com/en/models/2835228-pimoroni-inky-impression-7-3-v2025-case#profileId-3159881)
+
+[Buttons on back (2026 version)](https://makerworld.com/en/models/2835207-pimoroni-inky-impression-7-3-v2026-case#profileId-3159848)
 
 Other displays may work, but this project is tuned specifically for Inky hardware.
 
