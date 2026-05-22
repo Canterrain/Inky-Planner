@@ -63,8 +63,8 @@ Other displays may work, but this project is tuned specifically for Inky hardwar
 Recommended on Raspberry Pi:
 
 ```bash
-git clone https://github.com/Canterrain/Inky-Planner.git
-cd Inky-Planner
+cd ~
+wget https://raw.githubusercontent.com/Canterrain/Inky-Planner/main/setup.sh
 bash setup.sh
 ```
 
